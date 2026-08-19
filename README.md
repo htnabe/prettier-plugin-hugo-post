@@ -1,9 +1,9 @@
 # @htnabe/prettier-plugin-hugo-post
 
-[![npm version](https://img.shields.io/npm/v/prettier-plugin-hugo-post)](https://www.npmjs.com/package/prettier-plugin-hugo-post)
+[![npm version](https://img.shields.io/npm/v/@htnabe/prettier-plugin-hugo-post)](https://www.npmjs.com/package/@htnabe/prettier-plugin-hugo-post)
 [![GitHub](https://img.shields.io/github/stars/htnabe/prettier-plugin-hugo-post?style=social)](https://github.com/htnabe/prettier-plugin-hugo-post)
 [![codecov](https://codecov.io/gh/htnabe/prettier-plugin-hugo-post/graph/badge.svg?token=BR5Y5MAXON)](https://codecov.io/gh/htnabe/prettier-plugin-hugo-post)
-[![license](https://img.shields.io/npm/l/prettier-plugin-hugo-post)](https://github.com/htnabe/prettier-plugin-hugo-post/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/@htnabe/prettier-plugin-hugo-post)](https://github.com/htnabe/prettier-plugin-hugo-post/blob/main/LICENSE)
 
 A Prettier plugin for formatting Hugo content files that mix front matter, Markdown, and Go template syntax.
 
@@ -37,7 +37,7 @@ bun add -d prettier @htnabe/prettier-plugin-hugo-post
 Using npm:
 
 ```bash
-npm install --save-dev @htnabe/prettier prettier-plugin-hugo-post
+npm install --save-dev prettier @htnabe/prettier-plugin-hugo-post
 ```
 
 If you also format Hugo layout templates, install the companion plugin:

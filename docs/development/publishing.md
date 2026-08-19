@@ -1,56 +1,54 @@
 # Publishing Guide
 
-This repository publishes to npm through the version-change release workflow defined in [.github/workflows/publish.yml](../../.github/workflows/publish.yml).
+This repository publishes to npm through the manually triggered workflow in [.github/workflows/publish.yml](../../.github/workflows/publish.yml).
 
 ## Release flow
 
-The project follows a standard semantic-versioning flow:
+The project uses a manual, main-branch release flow:
 
 1. Update the version in [package.json](../../package.json).
-2. Commit the version bump and tag the release.
-3. Push the tag to GitHub.
-4. The release workflow runs tests, checks formatting, creates the GitHub release, and publishes the package to npm.
+2. Commit the version bump and push it to `main`.
+3. Run the GitHub Actions workflow from the `main` branch.
+4. The workflow validates the package, then publishes it to npm using GitHub's OIDC trusted-publishing flow.
+
+This is a manual release, not a tag-driven release.
 
 ## Manual versioning
 
-Update the version in [package.json](../../package.json), then commit the change and tag the release:
+Update the version in [package.json](../../package.json), then commit and push the change:
 
 ```bash
 # edit package.json to set the new semver version
 git add package.json
 git commit -m "chore: release vX.Y.Z"
-git tag vX.Y.Z
+git push origin main
 ```
 
-Then push the commit and tag:
-
-```bash
-git push origin main --follow-tags
-```
-
-The release workflow is configured to trigger on tags matching `v*`.
+Then trigger the publish workflow from the GitHub Actions UI for the `main` branch.
 
 ## Required checks before publish
 
 The release job runs:
 
 - `bun install --frozen-lockfile`
+- `bun run lint`
 - `bun test`
-- `bun run format:check`
-- `bun run example`
+- `bun run build`
+- `bun pack --dry-run`
 
-The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) performs the same validation for pull requests and pushes to `main`.
+The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) runs the same general validation for pull requests and pushes to `main`.
 
-## GitHub and npm secrets
+## GitHub and npm publishing setup
 
-The workflow expects the following release credential:
+The workflow uses GitHub Actions OIDC trusted publishing rather than a personal npm token:
 
-- `NPM_TOKEN` for publishing to npm
+- `id-token: write` is granted to the workflow
+- `bun publish --access public` is executed during the publish step
 
-This value must be available in the repository's GitHub Actions secrets.
+No `NPM_TOKEN` secret is required for the current configuration.
 
 ## Notes
 
-- Publishing is tied to release tags, not to ordinary pushes to `main`.
+- Publishing is manual and intended to be triggered from `main`, not from ordinary tag pushes.
 - The repository keeps the release logic in CI rather than in ad hoc local commands.
 - Before a release, ensure the package version and changelog metadata are in sync with the intended feature or fix set.

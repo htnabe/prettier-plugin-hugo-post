@@ -21,7 +21,6 @@ This document summarizes the repository layout and the purpose of the main direc
 │   ├── config/
 │   ├── features/
 │   ├── types/
-│   ├── utils/
 │   └── index.ts
 ├── test-files/
 ├── tests/
@@ -31,7 +30,6 @@ This document summarizes the repository layout and the purpose of the main direc
 ├── .gitignore
 ├── .oxlintrc.json
 ├── .prettierignore
-├── .prettierrc
 ├── AGENTS.md
 ├── CHANGELOG.md
 ├── LICENSE
@@ -61,7 +59,6 @@ This document summarizes the repository layout and the purpose of the main direc
 - [src/config/options.ts](../../src/config/options.ts): plugin option definitions.
 - [src/features/printers/printers.ts](../../src/features/printers/printers.ts): formatting logic for front matter, templates, and Markdown sections.
 - [src/types](../../src/types): TypeScript types used by the formatter.
-- [src/utils](../../src/utils): small utility helpers used during parsing and formatting.
 
 ### Tests
 

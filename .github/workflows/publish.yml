@@ -1,0 +1,130 @@
+name: Publish Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - package.json
+      - bun.lock
+      - src/**
+      - tsconfig.json
+      - tsdown.config.ts
+      - .github/workflows/publish.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-main
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.release.outputs.should_publish }}
+      package_name: ${{ steps.release.outputs.package_name }}
+      package_version: ${{ steps.release.outputs.package_version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.0
+
+      - name: Check release guard
+        id: release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          REF_NAME: ${{ github.ref }}
+        run: |
+          if [[ "$REF_NAME" != "refs/heads/main" ]]; then
+            echo "Publishing is only allowed from main"
+            exit 1
+          fi
+
+          package_name=$(node -p "require('./package.json').name")
+          package_version=$(node -p "require('./package.json').version")
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            version_changed=true
+          elif [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+            version_changed=true
+          else
+            previous_version=$(git show "$BEFORE_SHA:package.json" | node -e \
+              'let input=""; process.stdin.on("data", chunk => input += chunk).on("end", () => console.log(JSON.parse(input).version))')
+            version_changed=$([[ "$package_version" != "$previous_version" ]] && echo true || echo false)
+          fi
+
+          if [[ "$version_changed" != true ]]; then
+            echo "No package version change; skipping publish"
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if npm view "$package_name@$package_version" version >/dev/null 2>&1; then
+            echo "$package_name@$package_version is already published"
+            echo "Do not reuse a published version; create a new version instead."
+            exit 1
+          fi
+
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "package_name=$package_name" >> "$GITHUB_OUTPUT"
+          echo "package_version=$package_version" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: prepare
+    if: needs.prepare.outputs.should_publish == 'true'
+    runs-on: ubuntu-latest
+    environment: publish
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.0
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run release checks
+        run: |
+          bun run lint
+          bun test
+          bun run build
+          bun pack --dry-run
+
+      - name: Publish to npm
+        env:
+          PACKAGE_VERSION: ${{ needs.prepare.outputs.package_version }}
+        run: |
+          npm_tag=latest
+          if [[ "$PACKAGE_VERSION" == *-* ]]; then
+            prerelease="${PACKAGE_VERSION#*-}"
+            prerelease="${prerelease%%.*}"
+            case "$prerelease" in
+              beta)
+                npm_tag=beta
+                ;;
+              rc)
+                npm_tag=rc
+                ;;
+              *)
+                npm_tag=next
+                ;;
+            esac
+          fi
+          bun publish --access public --tag "$npm_tag"

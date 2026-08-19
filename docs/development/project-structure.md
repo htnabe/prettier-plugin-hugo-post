@@ -8,8 +8,8 @@ This document summarizes the repository layout and the purpose of the main direc
 .
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml
-│       └── release.yml
+│       ├── test.yml
+│       └── publish.yml
 ├── docs/
 │   └── development/
 │       ├── CONTRIBUTING.md
@@ -81,8 +81,8 @@ This document summarizes the repository layout and the purpose of the main direc
 
 ### GitHub automation
 
-- [.github/workflows/ci.yml](../../.github/workflows/ci.yml): CI validation for pushes and pull requests.
-- [.github/workflows/release.yml](../../.github/workflows/release.yml): release workflow that runs tests, creates a GitHub release, and publishes to npm.
+- [.github/workflows/test.yml](../../.github/workflows/test.yml): CI validation for pushes and pull requests.
+- [.github/workflows/publish.yml](../../.github/workflows/publish.yml): release workflow that validates the package and publishes it to npm.
 
 ## Working mental model
 

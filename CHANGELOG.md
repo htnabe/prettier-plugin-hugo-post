@@ -9,31 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial implementation of prettier-plugin-hugo-post
-- Support for YAML, TOML, and JSON front matter formatting
-- Hugo template syntax formatting (variables, shortcodes, control structures)
-- Markdown content formatting while preserving Hugo templates
-- Configurable options for bracket spacing and shortcode formatting
-- Comprehensive test suite
-- Documentation and examples
+- Release workflow migration to Bun-based publish automation
+- Repository metadata aligned for the htnabe fork
+- Documentation updates for the current GitHub Actions naming and release flow
 
-### Features
+### Changed
 
-- Smart multi-format parsing for hybrid Hugo content files
-- Template-aware markdown formatting
-- Hugo shortcode support (`{{< >}}` and `{{% %}}`)
-- Go template formatting with proper spacing
-- Whitespace control preservation (`{{-` and `-}}`)
-- Template comment handling (`{{/* */}}`)
-- Pipeline formatting with proper spacing around `|`
-- Front matter preservation and formatting
+- Updated the package publishing configuration for the maintained fork
+- Simplified the GitHub environment declaration to the standard Actions string form
 
-## [0.1.0] - 2025-01-15
+## [0.0.1-rc.1] - 2026-08-19
 
 ### Added
 
-- Initial release
-- Basic Hugo content file parsing and formatting
-- Support for common Hugo template patterns
-- Integration with Prettier 3.x
-- Test suite and documentation
+- Initial release candidate for the formatted Hugo content plugin
+- YAML, TOML, and JSON front matter support
+- Markdown and shortcode formatting integration with Prettier
+- Coverage for shortcode parsing, template spacing, and malformed input recovery

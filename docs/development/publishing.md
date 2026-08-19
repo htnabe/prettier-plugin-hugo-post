@@ -1,6 +1,6 @@
 # Publishing Guide
 
-This repository publishes to npm through the tag-based release workflow defined in [.github/workflows/release.yml](../../.github/workflows/release.yml).
+This repository publishes to npm through the version-change release workflow defined in [.github/workflows/publish.yml](../../.github/workflows/publish.yml).
 
 ## Release flow
 
@@ -39,16 +39,15 @@ The release job runs:
 - `bun run format:check`
 - `bun run example`
 
-The CI workflow in [.github/workflows/ci.yml](../../.github/workflows/ci.yml) performs the same validation for pull requests and pushes to `main`.
+The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) performs the same validation for pull requests and pushes to `main`.
 
 ## GitHub and npm secrets
 
-The workflow expects the following release credentials:
+The workflow expects the following release credential:
 
 - `NPM_TOKEN` for publishing to npm
-- `MY_GITHUB_TOKEN` for changelog generation and GitHub release creation
 
-These values must be available in the repository's GitHub Actions secrets.
+This value must be available in the repository's GitHub Actions secrets.
 
 ## Notes
 

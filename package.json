@@ -1,7 +1,7 @@
 {
-  "name": "prettier-plugin-hugo-post",
-  "version": "0.4.1",
-  "description": "A Prettier plugin for Hugo content files with YAML front matter, Markdown content, and Go template syntax",
+  "name": "@htnabe/prettier-plugin-hugo-post",
+  "version": "0.0.1-rc.1",
+  "description": "A Prettier plugin for formatting Hugo content files with YAML, TOML, or JSON front matter, Markdown content, and Go template syntax.",
   "main": "dist/index.mjs",
   "types": "dist/index.d.mts",
   "type": "module",
@@ -11,25 +11,30 @@
     "hugo",
     "markdown",
     "yaml",
+    "toml",
+    "json",
     "go-template",
     "front-matter",
     "static-site-generator"
   ],
-  "author": "Chad Metcalf <chad@metcalfc.com>",
+  "author": "htnabe",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/metcalfc/prettier-plugin-hugo-post.git"
+    "url": "git+https://github.com/htnabe/prettier-plugin-hugo-post.git"
   },
   "bugs": {
-    "url": "https://github.com/metcalfc/prettier-plugin-hugo-post/issues"
+    "url": "https://github.com/htnabe/prettier-plugin-hugo-post/issues"
   },
-  "homepage": "https://github.com/metcalfc/prettier-plugin-hugo-post#readme",
+  "homepage": "https://github.com/htnabe/prettier-plugin-hugo-post#readme",
   "engines": {
-    "node": ">=14",
+    "node": ">=22.0.0",
     "bun": ">=1.1.0"
   },
   "packageManager": "bun@1.2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "prettier": ">=3.0.0"
   },
@@ -39,6 +44,7 @@
   "devDependencies": {
     "@types/node": "^26.2.0",
     "@typescript/native-preview": "^7.0.0-dev.20260707.2",
+    "@vitest/coverage-v8": "^4.1.11",
     "jsdom": "^30.0.1",
     "lefthook": "^2.1.10",
     "oxlint": "^1.79.0",
@@ -55,9 +61,10 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "build": "tsdown",
     "update": "ncu -u && bun install",
-    "example": "bun run build && prettier --plugin ./dist/index.mjs examples/test.md"
+    "example": "bun run build && bunx prettier --plugin ./dist/index.mjs examples/test.md"
   },
   "files": [
     "dist/",

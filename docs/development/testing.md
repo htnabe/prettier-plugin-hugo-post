@@ -73,7 +73,7 @@ This is useful when iterating on a specific parser or printer behavior without r
 
 ## CI expectations
 
-The CI workflow in [.github/workflows/ci.yml](../../.github/workflows/ci.yml) runs:
+The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) runs:
 
 - `bun install --frozen-lockfile`
 - `bun test`

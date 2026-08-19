@@ -295,7 +295,7 @@ function formatShortcodeFromTokens(tokens: { type: string; value: string }[]): s
 }
 
 /**
- * Enhanced template variable formatter inspired by prettier-plugin-go-template
+ * Enhanced template variable formatter inspired by @htnabe/prettier-plugin-go-template
  * Handles Go template syntax with better spacing and structure
  */
 function formatTemplateVariable(match: string, inner: string): string {

@@ -1,16 +1,6 @@
 name: Publish Release
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - package.json
-      - bun.lock
-      - src/**
-      - tsconfig.json
-      - tsdown.config.ts
-      - .github/workflows/publish.yml
   workflow_dispatch:
 
 permissions:

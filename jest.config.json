@@ -1,8 +1,0 @@
-{
-  "testEnvironment": "node",
-  "roots": ["<rootDir>/tests"],
-  "testMatch": ["**/*.test.js"],
-  "collectCoverageFrom": ["src/**/*.js", "!src/**/*.test.js"],
-  "coverageDirectory": "coverage",
-  "coverageReporters": ["text", "lcov", "html"]
-}

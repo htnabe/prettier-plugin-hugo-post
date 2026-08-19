@@ -1,8 +1,9 @@
 {
-  "name": "prettier-plugin-hugo-post",
-  "version": "0.4.1",
-  "description": "A Prettier plugin for Hugo content files with YAML front matter, Markdown content, and Go template syntax",
-  "main": "src/index.js",
+  "name": "@htnabe/prettier-plugin-hugo-post",
+  "version": "0.0.1-rc.1",
+  "description": "A Prettier plugin for formatting Hugo content files with YAML, TOML, or JSON front matter, Markdown content, and Go template syntax.",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "type": "module",
   "keywords": [
     "prettier",
@@ -10,45 +11,75 @@
     "hugo",
     "markdown",
     "yaml",
+    "toml",
+    "json",
     "go-template",
     "front-matter",
     "static-site-generator"
   ],
-  "author": "Chad Metcalf <chad@metcalfc.com>",
+  "author": "htnabe",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/metcalfc/prettier-plugin-hugo-post.git"
+    "url": "git+https://github.com/htnabe/prettier-plugin-hugo-post.git"
   },
   "bugs": {
-    "url": "https://github.com/metcalfc/prettier-plugin-hugo-post/issues"
+    "url": "https://github.com/htnabe/prettier-plugin-hugo-post/issues"
   },
-  "homepage": "https://github.com/metcalfc/prettier-plugin-hugo-post#readme",
+  "homepage": "https://github.com/htnabe/prettier-plugin-hugo-post#readme",
   "engines": {
-    "node": ">=14"
+    "node": ">=22.0.0",
+    "bun": ">=1.1.0"
+  },
+  "packageManager": "bun@1.2.0",
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "prettier": ">=3.0.0"
   },
+  "dependencies": {
+    "prettier-plugin-toml": "^2.0.6"
+  },
   "devDependencies": {
-    "@babel/core": "^7.22.0",
-    "@babel/preset-env": "^7.22.0",
-    "jest": "^30.1.3",
-    "prettier": "^3.0.0"
+    "@types/node": "^26.2.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260707.2",
+    "@vitest/coverage-v8": "^4.1.11",
+    "jsdom": "^30.0.1",
+    "lefthook": "^2.1.10",
+    "oxlint": "^1.79.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "prettier": "^3.9.6",
+    "ts-node": "^10.9.2",
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "test:watch": "jest --watch",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "example": "prettier --plugin ./src/index.js examples/test.md"
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "build": "tsdown",
+    "example": "bun run build && bunx prettier --plugin ./dist/index.mjs examples/test.md"
   },
   "files": [
-    "src/",
+    "dist/",
     "README.md",
     "LICENSE"
   ],
-  "dependencies": {
-    "prettier-plugin-toml": "^2.0.6"
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "bracketSpacing": true,
+    "arrowParens": "avoid"
+  },
+  "allowScripts": {
+    "lefthook@2.1.10": true
   }
 }

@@ -120,3 +120,6 @@ tmp/
 
 # Prettier plugin specific
 .prettier-plugin-cache
+
+# build artifacts
+dist/

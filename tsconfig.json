@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["node", "vitest/globals"],
+    "target": "es2025",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+
+    "declaration": true,
+    "emitDeclarationOnly": false,
+
+    "inlineSourceMap": true,
+    "inlineSources": true,
+
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+
+  "include": ["src", "tests"],
+  "exclude": ["node_modules"]
+}

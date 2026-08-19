@@ -22,6 +22,7 @@ export interface PerformanceTestCase {
 export interface ErrorRecoveryTestCase {
   name: string;
   input: string;
+  maxTime?: number;
   shouldContain?: string[];
 }
 
@@ -78,9 +79,15 @@ export function runPerformanceTests(testCases: PerformanceTestCase[]): void {
 // Error recovery tests ------------------------------------------------
 
 export function runErrorRecoveryTests(testCases: ErrorRecoveryTestCase[]): void {
-  testCases.forEach(({ name, input, shouldContain = [] }) => {
+  testCases.forEach(({ name, input, maxTime, shouldContain = [] }) => {
     test(name, async () => {
+      const start = performance.now();
       const result = await formatCode(input);
+      const end = performance.now();
+
+      if (maxTime !== undefined) {
+        expect(end - start).toBeLessThan(maxTime);
+      }
 
       shouldContain.forEach(expected => {
         expect(result).toContain(expected);

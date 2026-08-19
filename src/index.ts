@@ -23,12 +23,13 @@ function parseHugoPost(text: string) {
   return {
     type: 'hugo-post',
     source: text,
-    frontMatter: parts.frontMatter
-      ? {
-          content: parts.frontMatter,
-          delimiter: parts.delimiter,
-        }
-      : null,
+    frontMatter:
+      parts.frontMatter !== null
+        ? {
+            content: parts.frontMatter,
+            delimiter: parts.delimiter,
+          }
+        : null,
     content: parts.content || '',
   };
 }

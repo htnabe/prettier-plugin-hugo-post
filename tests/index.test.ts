@@ -65,6 +65,13 @@ title: "Just Front Matter"
     expect(result).toContain('No front matter here.');
   });
 
+  test('preserves empty front matter blocks', async () => {
+    const input = '---\n---\n\nContent after empty front matter.';
+    const result = await formatCode(input);
+    expect(result).toContain('Content after empty front matter.');
+    expect(result).toContain('---');
+  });
+
   test('handles nested template structures', async () => {
     const input = `{{ range .Pages }}
   {{ if .Params.featured }}

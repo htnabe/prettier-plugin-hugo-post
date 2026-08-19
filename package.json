@@ -31,17 +31,21 @@
     "prettier": ">=3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.0",
-    "@babel/preset-env": "^7.22.0",
-    "jest": "^30.1.3",
-    "prettier": "^3.0.0"
+    "@types/node": "^26.1.2",
+    "jsdom": "^30.0.1",
+    "oxlint": "^1.76.0",
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "test:watch": "jest --watch",
+    "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "example": "prettier --plugin ./src/index.js examples/test.md"
+    "example": "prettier --plugin ./src/index.js examples/test.md",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
   },
   "files": [
     "src/",

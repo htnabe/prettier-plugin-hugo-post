@@ -1,164 +1,13 @@
-// prettier-plugin-hugo-post
-// Fixed implementation with proper Prettier markdown integration
-
-// No longer need yaml dependency - using Prettier's built-in parsers
-import { doc } from 'prettier';
-const { builders } = doc;
-const { concat, hardline, join } = builders;
-
-// Plugin metadata
-export const languages = [
-  {
-    name: 'Hugo Post',
-    parsers: ['hugo-post'],
-    extensions: ['.md', '.hugo'],
-    filenames: [],
-  },
-];
-
-export const parsers = {
-  'hugo-post': {
-    parse: parseHugoPost,
-    astFormat: 'hugo-post-ast',
-    locStart: () => 0,
-    locEnd: node => node.source?.length || 0,
-  },
-};
-
 export const printers = {
   'hugo-post-ast': {
     print: printHugoPost,
   },
 };
 
-export const options = {
-  hugoTemplateBracketSpacing: {
-    type: 'boolean',
-    category: 'Hugo',
-    default: true,
-    description: 'Print spaces between go template brackets',
-  },
-};
-
-/**
- * Parse Hugo post content
- */
-function parseHugoPost(text) {
-  const parts = splitFrontMatter(text);
-
-  return {
-    type: 'hugo-post',
-    source: text,
-    frontMatter: parts.frontMatter
-      ? {
-          content: parts.frontMatter,
-          delimiter: parts.delimiter,
-        }
-      : null,
-    content: parts.content || '',
-  };
-}
-
-/**
- * Split text into front matter and content
- */
-function splitFrontMatter(text) {
-  // YAML front matter
-  const yamlMatch = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
-  if (yamlMatch) {
-    return {
-      frontMatter: yamlMatch[1],
-      delimiter: 'yaml',
-      content: yamlMatch[2],
-    };
-  }
-
-  // TOML front matter
-  const tomlMatch = text.match(/^\+\+\+\r?\n([\s\S]*?)\r?\n\+\+\+\r?\n([\s\S]*)$/);
-  if (tomlMatch) {
-    return {
-      frontMatter: tomlMatch[1],
-      delimiter: 'toml',
-      content: tomlMatch[2],
-    };
-  }
-
-  // JSON front matter
-  const jsonMatch = text.match(/^{\r?\n([\s\S]*?)\r?\n}\r?\n([\s\S]*)$/);
-  if (jsonMatch) {
-    return {
-      frontMatter: `{\n${jsonMatch[1]}\n}`,
-      delimiter: 'json',
-      content: jsonMatch[2],
-    };
-  }
-
-  // No front matter
-  return {
-    frontMatter: null,
-    delimiter: null,
-    content: text,
-  };
-}
-
-/**
- * Extract Hugo templates from content
- */
-function extractTemplates(content) {
-  const templates = [];
-  const matchedRanges = [];
-  const patterns = [
-    { regex: /\{\{<\s*[^>]*\s*>\}\}/g, type: 'shortcode' }, // Hugo shortcodes (check first)
-    { regex: /\{\{%\s*[^%]*\s*%\}\}/g, type: 'shortcode' }, // Hugo shortcode alternatives
-    { regex: /\{\{\/\*[\s\S]*?\*\/\}\}/g, type: 'comment' }, // Hugo comments
-    { regex: /\{\{-?\s*[^}]*\s*-?\}\}/g, type: null }, // Hugo variables and functions (check last)
-  ];
-
-  patterns.forEach(({ regex, type }) => {
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      const start = match.index;
-      const end = match.index + match[0].length;
-
-      // Check if this range overlaps with any existing match
-      const overlaps = matchedRanges.some(range => start < range.end && end > range.start);
-
-      if (!overlaps) {
-        matchedRanges.push({ start, end });
-        templates.push({
-          start,
-          end,
-          content: match[0],
-          type: type || classifyTemplate(match[0]),
-        });
-      }
-    }
-  });
-
-  return templates.sort((a, b) => a.start - b.start);
-}
-
-/**
- * Classify template type
- */
-function classifyTemplate(template) {
-  if (template.includes('{{<') || template.includes('{{%')) {
-    return 'shortcode';
-  } else if (template.includes('{{/*')) {
-    return 'comment';
-  } else if (template.includes('|')) {
-    return 'pipeline';
-  } else if (template.match(/\{\{\s*-?\s*(if|range|with|end)\b/)) {
-    return 'control';
-  } else {
-    return 'variable';
-  }
-}
-
 /**
  * Print Hugo post content
  */
-async function printHugoPost(path, options, print) {
+async function printHugoPost(path: any, options: any): Promise<string> {
   const node = path.getValue();
   const parts = [];
 
@@ -186,27 +35,9 @@ async function printHugoPost(path, options, print) {
 }
 
 /**
- * Format YAML front matter using Prettier
- */
-async function formatYaml(yamlContent, options) {
-  try {
-    // Use dynamic import for ES modules
-    const { format } = await import('prettier');
-    const result = await format(yamlContent, {
-      ...options,
-      parser: 'yaml',
-    });
-    return result.trim();
-  } catch (error) {
-    // Fallback to basic cleanup if Prettier fails
-    return yamlContent.trim();
-  }
-}
-
-/**
  * Format TOML front matter using prettier-plugin-toml
  */
-async function formatToml(tomlContent, options) {
+async function formatToml(tomlContent: string, options: any): Promise<string> {
   try {
     // Use dynamic import for ES modules
     const { format } = await import('prettier');
@@ -218,7 +49,11 @@ async function formatToml(tomlContent, options) {
     return result.trim();
   } catch (error) {
     // Fallback to basic cleanup if Prettier fails
-    console.warn('TOML formatting failed:', error.message);
+    if (error instanceof Error) {
+      console.warn('TOML formatting failed:', error.message);
+    } else {
+      console.warn('TOML formatting failed with unknown error:', error);
+    }
     return tomlContent.trim();
   }
 }
@@ -226,7 +61,7 @@ async function formatToml(tomlContent, options) {
 /**
  * Format JSON front matter using Prettier's built-in JSON parser
  */
-async function formatJson(jsonContent, options) {
+async function formatJson(jsonContent: string, options: any): Promise<string> {
   try {
     // Use dynamic import for ES modules
     const { format } = await import('prettier');
@@ -237,7 +72,11 @@ async function formatJson(jsonContent, options) {
     return result.trim();
   } catch (error) {
     // Fallback to basic cleanup if Prettier fails
-    console.warn('JSON formatting failed:', error.message);
+    if (error instanceof Error) {
+      console.warn('JSON formatting failed:', error.message);
+    } else {
+      console.warn('JSON formatting failed with unknown error:', error);
+    }
     return jsonContent.trim();
   }
 }
@@ -245,7 +84,7 @@ async function formatJson(jsonContent, options) {
 /**
  * Format Hugo content (markdown + templates)
  */
-async function formatHugoContent(content, options) {
+async function formatHugoContent(content: string, options: any): Promise<string> {
   // First, format all Hugo templates with regex
   content = formatHugoTemplates(content);
 
@@ -263,6 +102,77 @@ async function formatHugoContent(content, options) {
   }
 }
 
+function formatHugoTemplates(content: string): string {
+  try {
+    // Handle both {{< >}} and {{% %}} shortcodes with tokenization
+    content = content.replace(/(\{\{[<%]\s*)(.*?)(\s*[>%]\}\})/g, (match, open, inner, close) => {
+      try {
+        // Remove self-closing slash
+        inner = inner.replace(/\/$/, '');
+
+        // Tokenize and reformat
+        const tokens = tokenizeShortcode(inner);
+        const formatted = formatShortcodeFromTokens(tokens);
+
+        // Determine proper delimiters (preserve < vs %)
+        const isPercent = open.includes('%');
+        const openDelim = isPercent ? '{{% ' : '{{< ';
+        const closeDelim = isPercent ? ' %}}' : ' >}}';
+
+        return openDelim + formatted + closeDelim;
+      } catch (error) {
+        if (error instanceof Error) {
+          console.warn(`Failed to format shortcode: ${match}. Error: ${error.message}`);
+        } else {
+          console.warn(`Failed to format shortcode: ${match}. Unknown error:`, error);
+        }
+        return match; // Return original on error
+      }
+    });
+
+    // Handle regular Hugo variables: {{ .Variable }}
+    content = content.replace(/\{\{(?!<|%|\/\*)\s*([^}]*?)\s*\}\}/g, (match, inner: string) => {
+      try {
+        return formatTemplateVariable(match, inner);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.warn(`Failed to format variable: ${match}. Error: ${error.message}`);
+        } else {
+          console.warn(`Failed to format variable: ${match}. Unknown error:`, error);
+        }
+        return match; // Return original on error
+      }
+    });
+
+    // Handle comments: {{/* comment */}}
+    content = content.replace(/\{\{\/\*\s*([\s\S]*?)\s*\*\/\}\}/g, (match, inner) => {
+      try {
+        return `{{/* ${inner.trim()} */}}`;
+      } catch (error) {
+        if (error instanceof Error) {
+          console.warn(`Failed to format comment: ${match}. Error: ${error.message}`);
+        } else {
+          console.warn(`Failed to format comment: ${match}. Unknown error:`, error);
+        }
+        return match; // Return original on error
+      }
+    });
+
+    // Ensure block-level control structures have proper line breaks to prevent
+    // markdown formatter from treating them as part of list items or other constructs
+    content = ensureProperBlockSpacing(content);
+
+    return content;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Critical error in formatHugoTemplates: ${error.message}`);
+    } else {
+      console.error(`Critical error in formatHugoTemplates with unknown error:`, error);
+    }
+    return content; // Return original content on critical failure
+  }
+}
+
 /**
  * Format Hugo templates manually using regex
  */
@@ -270,7 +180,7 @@ async function formatHugoContent(content, options) {
  * Tokenization-based Hugo shortcode formatter
  * Treats shortcode content as a mini-language to parse properly
  */
-function tokenizeShortcode(content) {
+function tokenizeShortcode(content: string) {
   const tokens = [];
   let i = 0;
   const maxIterations = Math.max(1000, content.length * 2); // Safety limit
@@ -341,7 +251,7 @@ function tokenizeShortcode(content) {
   return tokens;
 }
 
-function formatShortcodeFromTokens(tokens) {
+function formatShortcodeFromTokens(tokens: { type: string; value: string }[]): string {
   if (tokens.length === 0) return '';
 
   const result = [];
@@ -388,7 +298,7 @@ function formatShortcodeFromTokens(tokens) {
  * Enhanced template variable formatter inspired by prettier-plugin-go-template
  * Handles Go template syntax with better spacing and structure
  */
-function formatTemplateVariable(match, inner) {
+function formatTemplateVariable(match: string, inner: string): string {
   // Check for whitespace control (- at start or end)
   const startControl = match.match(/^\{\{-/) ? '{{- ' : '{{ ';
   const endControl = match.match(/-\}\}$/) ? ' -}}' : ' }}';
@@ -403,9 +313,40 @@ function formatTemplateVariable(match, inner) {
 }
 
 /**
+ * Ensure block-level control structures have proper spacing to prevent
+ * Prettier's markdown formatter from treating them as part of other constructs
+ */
+function ensureProperBlockSpacing(content: string): string {
+  // Split content into lines for analysis
+  const lines = content.split('\n');
+  const result = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const prevLine = i > 0 ? lines[i - 1] : '';
+    const trimmedLine = line.trim();
+
+    // Check if this line is an end control that should be standalone
+    const isEndControl = trimmedLine.match(/^\{\{\s*end\s*\}\}$/);
+    const prevIsListItem = prevLine.trim().match(/^[-*+]\s/);
+
+    // If previous line is a list item and current line is {{ end }},
+    // add blank line to prevent markdown formatter from indenting the {{ end }}
+    if (isEndControl && prevIsListItem) {
+      result.push('');
+      result.push(line);
+    } else {
+      result.push(line);
+    }
+  }
+
+  return result.join('\n');
+}
+
+/**
  * Format a template expression with proper spacing and structure
  */
-function formatTemplateExpression(expr) {
+function formatTemplateExpression(expr: string): string {
   // Handle empty expressions
   if (!expr) return '';
 
@@ -431,7 +372,7 @@ function formatTemplateExpression(expr) {
 /**
  * Format control structures like if, range, with
  */
-function formatControlStructure(expr) {
+function formatControlStructure(expr: string): string {
   // Normalize whitespace and preserve structure
   return expr.trim().replace(/\s+/g, ' ');
 }
@@ -439,7 +380,7 @@ function formatControlStructure(expr) {
 /**
  * Format regular expressions with proper pipe spacing and function calls
  */
-function formatExpression(expr) {
+function formatExpression(expr: string): string {
   // Handle complex expressions with pipes
   if (expr.includes('|')) {
     return formatPipeExpression(expr);
@@ -457,7 +398,7 @@ function formatExpression(expr) {
 /**
  * Format pipe expressions with proper spacing
  */
-function formatPipeExpression(expr) {
+function formatPipeExpression(expr: string): string {
   return expr
     .split('|')
     .map(part => formatFunctionCall(part.trim())) // Format each part as a function call
@@ -468,7 +409,7 @@ function formatPipeExpression(expr) {
 /**
  * Format function calls with proper argument spacing
  */
-function formatFunctionCall(expr) {
+function formatFunctionCall(expr: string): string {
   // Handle quoted strings and preserve them
   const parts = [];
   let current = '';
@@ -504,95 +445,20 @@ function formatFunctionCall(expr) {
   return parts.join(' ');
 }
 
-function formatHugoTemplates(content) {
-  try {
-    // Handle both {{< >}} and {{% %}} shortcodes with tokenization
-    content = content.replace(/(\{\{[<%]\s*)(.*?)(\s*[>%]\}\})/g, (match, open, inner, close) => {
-      try {
-        // Remove self-closing slash
-        inner = inner.replace(/\/$/, '');
-
-        // Tokenize and reformat
-        const tokens = tokenizeShortcode(inner);
-        const formatted = formatShortcodeFromTokens(tokens);
-
-        // Determine proper delimiters (preserve < vs %)
-        const isPercent = open.includes('%');
-        const openDelim = isPercent ? '{{% ' : '{{< ';
-        const closeDelim = isPercent ? ' %}}' : ' >}}';
-
-        return openDelim + formatted + closeDelim;
-      } catch (error) {
-        console.warn(`Failed to format shortcode: ${match}. Error: ${error.message}`);
-        return match; // Return original on error
-      }
-    });
-
-    // Handle regular Hugo variables: {{ .Variable }}
-    content = content.replace(/\{\{(?!<|%|\/\*)\s*([^}]*?)\s*\}\}/g, (match, inner) => {
-      try {
-        return formatTemplateVariable(match, inner);
-      } catch (error) {
-        console.warn(`Failed to format variable: ${match}. Error: ${error.message}`);
-        return match; // Return original on error
-      }
-    });
-
-    // Handle comments: {{/* comment */}}
-    content = content.replace(/\{\{\/\*\s*([\s\S]*?)\s*\*\/\}\}/g, (match, inner) => {
-      try {
-        return `{{/* ${inner.trim()} */}}`;
-      } catch (error) {
-        console.warn(`Failed to format comment: ${match}. Error: ${error.message}`);
-        return match; // Return original on error
-      }
-    });
-
-    // Ensure block-level control structures have proper line breaks to prevent
-    // markdown formatter from treating them as part of list items or other constructs
-    content = ensureProperBlockSpacing(content);
-
-    return content;
-  } catch (error) {
-    console.error(`Critical error in formatHugoTemplates: ${error.message}`);
-    return content; // Return original content on critical failure
-  }
-}
-
 /**
- * Ensure block-level control structures have proper spacing to prevent
- * Prettier's markdown formatter from treating them as part of other constructs
+ * Format YAML front matter using Prettier
  */
-function ensureProperBlockSpacing(content) {
-  // Split content into lines for analysis
-  const lines = content.split('\n');
-  const result = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const prevLine = i > 0 ? lines[i - 1] : '';
-    const trimmedLine = line.trim();
-
-    // Check if this line is an end control that should be standalone
-    const isEndControl = trimmedLine.match(/^\{\{\s*end\s*\}\}$/);
-    const prevIsListItem = prevLine.trim().match(/^[-*+]\s/);
-
-    // If previous line is a list item and current line is {{ end }},
-    // add blank line to prevent markdown formatter from indenting the {{ end }}
-    if (isEndControl && prevIsListItem) {
-      result.push('');
-      result.push(line);
-    } else {
-      result.push(line);
-    }
+async function formatYaml(yamlContent: string, options: any): Promise<string> {
+  try {
+    // Use dynamic import for ES modules
+    const { format } = await import('prettier');
+    const result = await format(yamlContent, {
+      ...options,
+      parser: 'yaml',
+    });
+    return result.trim();
+  } catch (error) {
+    // Fallback to basic cleanup if Prettier fails
+    return yamlContent.trim();
   }
-
-  return result.join('\n');
 }
-
-export default {
-  languages,
-  parsers,
-  printers,
-  options,
-};

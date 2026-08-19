@@ -63,7 +63,6 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "build": "tsdown",
-    "update": "ncu -u && bun install",
     "example": "bun run build && bunx prettier --plugin ./dist/index.mjs examples/test.md"
   },
   "files": [

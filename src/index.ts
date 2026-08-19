@@ -1,7 +1,3 @@
-// prettier-plugin-hugo-post
-// Fixed implementation with proper Prettier markdown integration
-
-// No longer need yaml dependency - using Prettier's built-in parsers
 import { options } from './config/options';
 import { languages } from './config/languages';
 import { printers } from './features/printers/printers';

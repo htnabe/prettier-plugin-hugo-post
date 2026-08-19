@@ -1,6 +1,8 @@
-import type { PrettierOptions } from 'prettier-plugin-toml';
+import type { Options as PrettierOptions, Plugin } from 'prettier';
 import { format } from 'prettier';
 import plugin from '../src/index.js';
+
+const prettierPlugin = plugin as unknown as Plugin;
 
 export interface FormatTestCase {
   name: string;
@@ -26,10 +28,12 @@ export interface ErrorRecoveryTestCase {
 // Prettier 実行ヘルパー ----------------------------------------------
 
 export async function formatCode(input: string, options: PrettierOptions = {}): Promise<string> {
+  const { parser: _parser, plugins: _plugins, ...restOptions } = options;
+
   return await format(input, {
+    ...restOptions,
     parser: 'hugo-post',
-    plugins: [plugin],
-    ...options,
+    plugins: [prettierPlugin],
   });
 }
 
@@ -38,7 +42,7 @@ export async function formatCode(input: string, options: PrettierOptions = {}): 
 export function runTableDrivenTests(testCases: FormatTestCase[]): void {
   testCases.forEach(({ name, input, options = {}, shouldContain = [], shouldNotContain = [] }) => {
     test(name, async () => {
-      const result = await formatCode(input, options);
+      const result = await formatCode(input, options as PrettierOptions);
 
       shouldContain.forEach(expected => {
         expect(result).toContain(expected);
@@ -59,7 +63,7 @@ export function runPerformanceTests(testCases: PerformanceTestCase[]): void {
       const input = generateInput();
 
       const start = performance.now();
-      const result = await formatCode(input, {});
+      const result = await formatCode(input, {} as PrettierOptions);
       const end = performance.now();
 
       expect(end - start).toBeLessThan(maxTime);

@@ -4,8 +4,7 @@
       "@/*": ["./src/*"]
     },
     "types": ["node", "vitest/globals"],
-    "target": "ES2020",
-    "lib": ["ESNext"],
+    "target": "es2025",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,

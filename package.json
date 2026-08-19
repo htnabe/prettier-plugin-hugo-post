@@ -2,7 +2,8 @@
   "name": "prettier-plugin-hugo-post",
   "version": "0.4.1",
   "description": "A Prettier plugin for Hugo content files with YAML front matter, Markdown content, and Go template syntax",
-  "main": "src/index.js",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "type": "module",
   "keywords": [
     "prettier",
@@ -25,34 +26,50 @@
   },
   "homepage": "https://github.com/metcalfc/prettier-plugin-hugo-post#readme",
   "engines": {
-    "node": ">=14"
+    "node": ">=14",
+    "bun": ">=1.1.0"
   },
+  "packageManager": "bun@1.2.0",
   "peerDependencies": {
     "prettier": ">=3.0.0"
   },
+  "dependencies": {
+    "prettier-plugin-toml": "^2.0.6"
+  },
   "devDependencies": {
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260707.2",
     "jsdom": "^30.0.1",
-    "oxlint": "^1.76.0",
-    "prettier": "^3.0.0",
+    "oxlint": "^1.79.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
+    "tsdown": "^0.22.14",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "scripts": {
-    "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "example": "prettier --plugin ./src/index.js examples/test.md",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "lint:fix": "oxlint --fix",
+    "test": "vitest run",
+    "build": "tsdown",
+    "update": "ncu -u && bun install",
+    "example": "bun run build && prettier --plugin ./dist/index.mjs examples/test.md"
   },
   "files": [
-    "src/",
+    "dist/",
     "README.md",
     "LICENSE"
   ],
-  "dependencies": {
-    "prettier-plugin-toml": "^2.0.6"
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "bracketSpacing": true,
+    "arrowParens": "avoid"
   }
 }

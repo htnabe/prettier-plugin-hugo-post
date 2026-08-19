@@ -96,7 +96,7 @@ async function formatHugoContent(content: string, options: any): Promise<string>
       parser: 'markdown',
     });
     return result.trim();
-  } catch (error) {
+  } catch {
     // Fallback to unformatted content
     return content.trim();
   }
@@ -105,7 +105,7 @@ async function formatHugoContent(content: string, options: any): Promise<string>
 function formatHugoTemplates(content: string): string {
   try {
     // Handle both {{< >}} and {{% %}} shortcodes with tokenization
-    content = content.replace(/(\{\{[<%]\s*)(.*?)(\s*[>%]\}\})/g, (match, open, inner, close) => {
+    content = content.replace(/(\{\{[<%]\s*)(.*?)(\s*[>%]\}\})/g, (match, open, inner, _close) => {
       try {
         // Remove self-closing slash
         inner = inner.replace(/\/$/, '');
@@ -457,7 +457,7 @@ async function formatYaml(yamlContent: string, options: any): Promise<string> {
       parser: 'yaml',
     });
     return result.trim();
-  } catch (error) {
+  } catch {
     // Fallback to basic cleanup if Prettier fails
     return yamlContent.trim();
   }

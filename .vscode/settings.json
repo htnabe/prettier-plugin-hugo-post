@@ -8,7 +8,5 @@
     "*.md": "markdown"
   },
   "prettier.requireConfig": true,
-  "prettier.useEditorConfig": false,
-  "jest.jestCommandLine": "npm test",
-  "jest.autoRun": "watch"
+  "prettier.useEditorConfig": false
 }

@@ -214,6 +214,17 @@ More content`,
           'More content',
         ],
       },
+      {
+        name: 'prevents a closing shortcode from being absorbed into a preceding table',
+        input: `{{< table "table" >}}
+| lang/libs | Year | Use case |
+|---|---|---|
+| Hugo | 3.5 | Hobby |
+{{</table>}}`,
+        shouldContain: ['{{< table "table" >}}', '{{< /table >}}'],
+        // The closing shortcode must not be turned into an extra table row.
+        shouldNotContain: ['| {{< /table >}} |', '| {{</ table >}} |'],
+      },
     ]);
   });
 

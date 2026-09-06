@@ -2,6 +2,8 @@
 
 This repository publishes to npm through the manually triggered workflow in [.github/workflows/publish.yml](../../.github/workflows/publish.yml).
 
+GitHub Releases are created separately and automatically by [.github/workflows/release.yml](../../.github/workflows/release.yml), which runs whenever a tag matching `v*` is pushed. It creates a GitHub Release for that tag with auto-generated release notes (`gh release create --generate-notes`). This workflow does not publish to npm — it only records the release on GitHub. Push the version tag (e.g. `git tag v0.0.1-rc.2 && git push origin v0.0.1-rc.2`) after the corresponding npm publish has completed, matching the tag to the version that was published.
+
 ## Release flow
 
 The project uses a manual, main-branch release flow:
@@ -52,3 +54,4 @@ No `NPM_TOKEN` secret is required for the current configuration.
 - Publishing is manual and intended to be triggered from `main`, not from ordinary tag pushes.
 - The repository keeps the release logic in CI rather than in ad hoc local commands.
 - Before a release, ensure the package version and changelog metadata are in sync with the intended feature or fix set.
+- After npm publish succeeds, push a matching `vX.Y.Z` tag to trigger the GitHub Release workflow.

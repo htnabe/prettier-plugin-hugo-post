@@ -359,12 +359,17 @@ function ensureProperBlockSpacing(content: string): string {
 }
 
 /**
- * Determine whether a trimmed line looks like a Markdown (GFM) table row,
- * including header separator rows such as `| --- | --- |`. GFM table rows and
- * separator rows always contain at least one pipe character.
+ * Determine whether a trimmed line looks like a Markdown (GFM) table row.
+ * This is intentionally conservative to avoid treating Go-template pipelines
+ * (e.g. `{{ .Title | upper }}`) or YAML block scalars (`key: |`) as tables.
  */
 function isMarkdownTableRow(trimmedLine: string): boolean {
-  return trimmedLine.includes('|');
+  if (trimmedLine === '' || trimmedLine.startsWith('{{')) return false;
+  // Most GFM table rows either start with '|' (Prettier's output) or contain
+  // at least one pipe with surrounding spaces: "a | b".
+  if (!(trimmedLine.startsWith('|') || /\s\|\s/.test(trimmedLine))) return false;
+  const pipeCount = trimmedLine.split('|').length - 1;
+  return pipeCount >= 2;
 }
 
 /**

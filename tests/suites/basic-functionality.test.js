@@ -225,6 +225,22 @@ More content`,
         // The closing shortcode must not be turned into an extra table row.
         shouldNotContain: ['| {{< /table >}} |', '| {{</ table >}} |'],
       },
+      {
+        name: 'does not treat Go template pipelines as table rows',
+        input: `# {{ .Title | upper }}
+
+Some text with {{ .Params.author | default "Anonymous" }}.
+Next line right after pipeline.`,
+        shouldContain: [
+          '{{ .Title | upper }}',
+          '{{ .Params.author | default "Anonymous" }}',
+          'Next line right after pipeline.',
+        ],
+        // No spurious blank line should be inserted after the pipeline lines.
+        shouldNotContain: [
+          '{{ .Params.author | default "Anonymous" }}.\n\nNext line right after pipeline.',
+        ],
+      },
     ]);
   });
 

@@ -7,16 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.1-rc.2] - 2026-09-06
+
 ### Added
 
 - Release workflow migration to Bun-based publish automation
 - Repository metadata aligned for the htnabe fork
 - Documentation updates for the current GitHub Actions naming and release flow
+- GitHub Actions workflow to automatically create a GitHub Release with generated notes when a `v*` tag is pushed
 
 ### Changed
 
 - Updated the package publishing configuration for the maintained fork
 - Simplified the GitHub environment declaration to the standard Actions string form
+
+### Fixed
+
+- Prevented a Markdown table from absorbing an immediately following Hugo shortcode closing tag (e.g. `{{</ table >}}`) as an extra table row by inserting the required blank line before it
 
 ## [0.0.1-rc.1] - 2026-08-19
 

@@ -1,6 +1,6 @@
 {
   "name": "@htnabe/prettier-plugin-hugo-post",
-  "version": "0.0.1-rc.1",
+  "version": "0.0.1-rc.2",
   "description": "A Prettier plugin for formatting Hugo content files with YAML, TOML, or JSON front matter, Markdown content, and Go template syntax.",
   "main": "dist/index.mjs",
   "types": "dist/index.d.mts",
@@ -42,12 +42,12 @@
     "prettier-plugin-toml": "^2.0.6"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.4.1",
     "@typescript/native-preview": "^7.0.0-dev.20260707.2",
     "@vitest/coverage-v8": "^4.1.11",
     "jsdom": "^30.0.1",
-    "lefthook": "^2.1.10",
-    "oxlint": "^1.79.0",
+    "lefthook": "^2.1.12",
+    "oxlint": "^1.81.0",
     "oxlint-tsgolint": "^7.0.2001",
     "prettier": "^3.9.6",
     "ts-node": "^10.9.2",

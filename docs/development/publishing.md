@@ -36,7 +36,7 @@ The release job runs:
 - `bun run lint`
 - `bun test`
 - `bun run build`
-- `bun pack --dry-run`
+- `bun pm pack --dry-run`
 
 The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) runs the same general validation for pull requests and pushes to `main`.
 

@@ -45,7 +45,8 @@ The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml
 The workflow uses GitHub Actions OIDC trusted publishing rather than a personal npm token:
 
 - `id-token: write` is granted to the workflow
-- `bun publish --access public` is executed during the publish step
+- `actions/setup-node` configures the npm registry (`registry-url: https://registry.npmjs.org`)
+- `npm publish --access public` is executed during the publish step — the npm CLI (>= 11.5.1) performs the OIDC token exchange for npm's Trusted Publisher flow automatically. `bun publish` does not implement this exchange, so `npm publish` is used for the actual publish step even though the rest of the workflow uses Bun.
 
 No `NPM_TOKEN` secret is required for the current configuration.
 

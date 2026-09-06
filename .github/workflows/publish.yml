@@ -87,6 +87,12 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
@@ -117,4 +123,9 @@ jobs:
                 ;;
             esac
           fi
-          bun publish --access public --tag "$npm_tag"
+          # npm CLI (>= 11.5.1) performs the OIDC token exchange for npm's
+          # Trusted Publisher flow automatically when id-token: write is
+          # granted and the registry is configured via actions/setup-node.
+          # 'bun publish' does not implement this OIDC exchange, so npm is
+          # used here instead for the actual publish step.
+          npm publish --access public --tag "$npm_tag"

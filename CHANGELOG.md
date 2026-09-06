@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Prevented a Markdown table from absorbing an immediately following Hugo shortcode closing tag (e.g. `{{</ table >}}`) as an extra table row by inserting the required blank line before it
+- Avoided misclassifying Go template pipelines (e.g. `{{ .Title | upper }}`) as Markdown table rows
+- Updated `publish.yml` to use the latest Bun version so `bun test`'s native test runner resolves the global `describe`/`test`/`expect` APIs used by the test suite
 
 ## [0.0.1-rc.1] - 2026-08-19
 

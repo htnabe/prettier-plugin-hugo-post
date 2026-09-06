@@ -95,7 +95,7 @@ jobs:
           bun run lint
           bun test
           bun run build
-          bun pack --dry-run
+          bun pm pack --dry-run
 
       - name: Publish to npm
         env:

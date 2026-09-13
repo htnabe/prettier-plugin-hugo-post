@@ -46,9 +46,10 @@ The workflow uses GitHub Actions OIDC trusted publishing rather than a personal 
 
 - `id-token: write` is granted to the workflow
 - `actions/setup-node` configures the npm registry (`registry-url: https://registry.npmjs.org`)
+- npm is explicitly upgraded to `npm@^11.5.1` after `actions/setup-node`, because Node 22 bundles npm 10.9.x, which does not perform the OIDC token exchange. Without this upgrade, `npm publish` sends an unauthenticated request and the registry returns a 404 for the existing scoped package instead of an auth error.
 - `npm publish --access public` is executed during the publish step — the npm CLI (>= 11.5.1) performs the OIDC token exchange for npm's Trusted Publisher flow automatically. `bun publish` does not implement this exchange, so `npm publish` is used for the actual publish step even though the rest of the workflow uses Bun.
 
-No `NPM_TOKEN` secret is required for the current configuration.
+No `NPM_TOKEN` secret is required for the current configuration, provided a Trusted Publisher entry for this package (repository `htnabe/prettier-plugin-hugo-post`, workflow file `publish.yml`, environment `publish`) is registered on npmjs.com under the package's **Settings → Trusted publishing**. This is a one-time manual setup on npmjs.com and cannot be configured from the workflow file alone — if it is missing, the OIDC exchange itself will fail even with a current npm CLI.
 
 ## Notes
 

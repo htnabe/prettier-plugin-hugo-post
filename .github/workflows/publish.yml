@@ -93,6 +93,16 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Upgrade npm for OIDC trusted publishing support
+        # Node 22 bundles npm 10.9.x, which predates npm's automatic OIDC
+        # token exchange for Trusted Publishing (requires npm >= 11.5.1).
+        # Without this upgrade, `npm publish` sends an unauthenticated
+        # request and the registry responds with a 404 for the existing
+        # scoped package instead of an auth error.
+        run: |
+          npm install -g npm@^11.5.1
+          npm --version
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 

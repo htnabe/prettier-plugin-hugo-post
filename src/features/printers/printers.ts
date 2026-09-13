@@ -200,6 +200,11 @@ function formatHugoTemplates(content: string): string {
     // Handle both {{< >}} and {{% %}} shortcodes with tokenization
     content = content.replace(/(\{\{[<%]\s*)(.*?)(\s*[>%]\}\})/g, (match, open, inner, _close) => {
       try {
+        const trimmedInner = inner.trim();
+        if (trimmedInner.startsWith('/*') && trimmedInner.endsWith('*/')) {
+          return match;
+        }
+
         // Remove self-closing slash
         inner = inner.replace(/\/$/, '');
 

@@ -10,12 +10,7 @@
     "plugin",
     "hugo",
     "markdown",
-    "yaml",
-    "toml",
-    "json",
-    "go-template",
-    "front-matter",
-    "static-site-generator"
+    "front-matter"
   ],
   "author": "htnabe",
   "license": "MIT",
@@ -78,5 +73,25 @@
     "printWidth": 100,
     "bracketSpacing": true,
     "arrowParens": "avoid"
+  },
+  "oxlint": {
+    "plugins": [
+      "typescript",
+      "unicorn",
+      "oxc"
+    ],
+    "categories": {
+      "correctness": "error"
+    },
+    "rules": {
+      "import/no-relative-parent-imports": "error"
+    },
+    "env": {
+      "builtin": true
+    },
+    "options": {
+      "typeAware": true,
+      "typeCheck": true
+    }
   }
 }

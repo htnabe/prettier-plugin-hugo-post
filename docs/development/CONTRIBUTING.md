@@ -20,6 +20,10 @@ Contributions are welcome as long as they stay focused on formatting behavior, p
 - Keep documentation aligned with code changes.
 - Prefer small, readable diffs over broad refactors.
 
+## Dependency updates
+
+Dependabot checks the Bun ecosystem weekly and targets `dev`. Keep `package.json` and `bun.lock` updated together. Use `bun outdated` to check available versions and validate major upgrades before merging them. No Dev Container update job is configured because this repository does not contain a Dev Container configuration.
+
 ## Validation checklist
 
 Before opening or updating a PR, run the repository checks:

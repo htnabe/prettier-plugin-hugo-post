@@ -9,7 +9,7 @@ GitHub Releases are created separately and automatically by [.github/workflows/r
 The project uses a manual, main-branch release flow:
 
 1. Update the version in [package.json](../../package.json).
-2. Commit the version bump and push it to `main`.
+2. Commit the version bump and dependency updates on `dev`, push them, and merge a PR into `main` after checks pass. The local working branch can remain `dev`.
 3. Run the GitHub Actions workflow from the `main` branch.
 4. The workflow validates the package, then publishes it to npm using GitHub's OIDC trusted-publishing flow.
 
@@ -17,16 +17,20 @@ This is a manual release, not a tag-driven release.
 
 ## Manual versioning
 
-Update the version in [package.json](../../package.json), then commit and push the change:
+Update the version in [package.json](../../package.json), include any dependency changes and the updated `bun.lock`, then commit and push the change on `dev`:
 
 ```bash
 # edit package.json to set the new semver version
-git add package.json
-git commit -m "chore: release vX.Y.Z"
-git push origin main
+git add package.json bun.lock
+git commit -m "chore(release): :bookmark: release vX.Y.Z"
+git push origin dev
 ```
 
-Then trigger the publish workflow from the GitHub Actions UI for the `main` branch.
+After the `dev` → `main` PR is merged and checks pass, trigger the publish workflow from the GitHub Actions UI for `main`, or run:
+
+```bash
+gh workflow run publish.yml --ref main
+```
 
 ## Required checks before publish
 
@@ -34,11 +38,12 @@ The release job runs:
 
 - `bun install --frozen-lockfile`
 - `bun run lint`
-- `bun test`
+- `bun run format:check`
+- `bun run test` (Vitest)
 - `bun run build`
 - `bun pm pack --dry-run`
 
-The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) runs the same general validation for pull requests and pushes to `main`.
+The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) runs Vitest with coverage, formatting checks, and the built plugin example for pull requests targeting `main` or `dev`.
 
 ## GitHub and npm publishing setup
 
@@ -57,3 +62,10 @@ No `NPM_TOKEN` secret is required for the current configuration, provided a Trus
 - The repository keeps the release logic in CI rather than in ad hoc local commands.
 - Before a release, ensure the package version and changelog metadata are in sync with the intended feature or fix set.
 - After npm publish succeeds, push a matching `vX.Y.Z` tag to trigger the GitHub Release workflow.
+- Create the tag at the published `main` commit, not at a potentially different local `dev` commit:
+
+  ```bash
+  git fetch origin main
+  git tag vX.Y.Z origin/main
+  git push origin vX.Y.Z
+  ```

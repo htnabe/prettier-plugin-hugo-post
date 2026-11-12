@@ -1,6 +1,6 @@
 {
   "name": "@htnabe/prettier-plugin-hugo-post",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Prettier plugin for formatting Hugo content files with YAML, TOML, or JSON front matter, Markdown content, and Go template syntax.",
   "main": "dist/index.mjs",
   "types": "dist/index.d.mts",
@@ -10,12 +10,7 @@
     "plugin",
     "hugo",
     "markdown",
-    "yaml",
-    "toml",
-    "json",
-    "go-template",
-    "front-matter",
-    "static-site-generator"
+    "front-matter"
   ],
   "author": "htnabe",
   "license": "MIT",
@@ -39,21 +34,21 @@
     "prettier": ">=3.0.0"
   },
   "dependencies": {
-    "prettier-plugin-toml": "^2.0.6"
+    "prettier-plugin-toml": "^4.1.0"
   },
   "devDependencies": {
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.6",
     "@typescript/native-preview": "^7.0.0-dev.20260707.2",
-    "@vitest/coverage-v8": "^4.1.11",
-    "jsdom": "^30.0.1",
-    "lefthook": "^2.1.12",
-    "oxlint": "^1.82.0",
-    "oxlint-tsgolint": "^7.0.2001",
-    "prettier": "^3.9.6",
+    "@vitest/coverage-v8": "^5.1.0",
+    "jsdom": "^31.0.0",
+    "lefthook": "^2.2.2",
+    "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "^7.0.2006",
+    "prettier": "^3.10.1",
     "ts-node": "^10.9.2",
-    "tsdown": "^0.22.14",
+    "tsdown": "^0.23.7",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.1.0"
   },
   "scripts": {
     "format": "prettier --write .",
@@ -63,7 +58,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "build": "tsdown",
-    "example": "bun run build && bunx prettier --plugin ./dist/index.mjs examples/test.md"
+    "example": "bun run build && bunx prettier --plugin ./dist/index.mjs --parser hugo-post < examples/test.md"
   },
   "files": [
     "dist/",
@@ -78,5 +73,25 @@
     "printWidth": 100,
     "bracketSpacing": true,
     "arrowParens": "avoid"
+  },
+  "oxlint": {
+    "plugins": [
+      "typescript",
+      "unicorn",
+      "oxc"
+    ],
+    "categories": {
+      "correctness": "error"
+    },
+    "rules": {
+      "import/no-relative-parent-imports": "error"
+    },
+    "env": {
+      "builtin": true
+    },
+    "options": {
+      "typeAware": true,
+      "typeCheck": true
+    }
   }
 }

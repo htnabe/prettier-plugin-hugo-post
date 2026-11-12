@@ -80,6 +80,54 @@ invalid yaml: content
   });
 
   describe('Hugo Shortcode Formatting', () => {
+    test('preserves parameter indentation in multiline shortcodes', async () => {
+      const input = `{{< cldimg
+   url="https://res.cloudinary.com/your-cloud-name/image/upload/v1234/path/to/image.webp"
+   alt="画像の説明"
+   caption="任意のキャプション"
+ >}}`;
+
+      const result = await formatCode(input);
+
+      expect(result).toBe(`{{< cldimg
+   url="https://res.cloudinary.com/your-cloud-name/image/upload/v1234/path/to/image.webp"
+   alt="画像の説明"
+   caption="任意のキャプション"
+>}}`);
+    });
+
+    test('aligns multiline shortcode delimiters without changing parameter indentation', async () => {
+      const trailingSpaces = '  ';
+      const input = `  {{% notice
+     type = "warning"${trailingSpaces}
+   %}}`;
+
+      const result = await formatCode(input);
+
+      expect(result).toBe(`  {{% notice
+     type="warning"
+  %}}`);
+    });
+
+    test('preserves trailing slashes in multiline shortcode parameters', async () => {
+      const input = `{{< image
+  url=https://example.com/assets/
+>}}`;
+
+      const result = await formatCode(input);
+
+      expect(result).toBe(input);
+    });
+
+    test.each([
+      '{{</* amazon asin="B0DZDMQYQL" title="Apple 2025 MacBook Pro 10 / 16GB メモリ / 512GB SSD" */>}}',
+      '{{%/* notice type="warning" text="A / B" */%}}',
+    ])('preserves escaped shortcode syntax exactly: %s', async input => {
+      const result = await formatCode(input);
+
+      expect(result).toBe(input);
+    });
+
     runTableDrivenTests([
       {
         name: 'formats shortcodes with proper spacing',

@@ -7,14 +7,18 @@ This repository uses Vitest for automated validation. The project also includes 
 Run the suite:
 
 ```bash
-bun test
+bun run test
 ```
 
-Run the plugin against the example file:
+This invokes Vitest, the runner used in CI. `bun test` also runs the tests using Bun's native runner.
+
+Build the plugin and format the example with the explicit `hugo-post` parser:
 
 ```bash
 bun run example
 ```
+
+The example is passed through stdin because fixture files are intentionally excluded by `.prettierignore`.
 
 Check project formatting:
 
@@ -76,11 +80,12 @@ This is useful when iterating on a specific parser or printer behavior without r
 The CI workflow in [.github/workflows/test.yml](../../.github/workflows/test.yml) runs:
 
 - `bun install --frozen-lockfile`
-- `bun test`
+- `bun run test:coverage`
 - `bun run format:check`
 - `bun run example`
 
 That means the repo should stay green with the same checks used locally before submission.
+CI uses Node.js 22.x alongside Bun. The current development dependencies require Node.js 22.22.2 or newer in the Node.js 22 line; the published plugin still supports Node.js 22.0.0 or newer.
 
 ## Good validation flow
 
